@@ -4,14 +4,14 @@ param resourceToken string
 param openai_api_version string
 
 param openAiLocation string
-param openAiSkuName string 
-param chatGptDeploymentCapacity int 
+param openAiSkuName string
+param chatGptDeploymentCapacity int
 param chatGptDeploymentName string
-param chatGptModelName string 
+param chatGptModelName string
 param chatGptModelVersion string
-param embeddingDeploymentName string 
+param embeddingDeploymentName string
 param embeddingDeploymentCapacity int
-param embeddingModelName string 
+param embeddingModelName string
 
 param dalleLocation string
 param dalleDeploymentCapacity int
@@ -55,7 +55,10 @@ var keyVaultName = toLower('${kv_prefix}-kv-${resourceToken}')
 var la_workspace_name = toLower('${name}-la-${resourceToken}')
 var diagnostic_setting_name = 'AppServiceConsoleLogs'
 
-var keyVaultSecretsOfficerRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')
+var keyVaultSecretsOfficerRole = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions',
+  'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+)
 
 var validStorageServiceImageContainerName = toLower(replace(storageServiceImageContainerName, '-', ''))
 
@@ -117,12 +120,12 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
       appCommandLine: 'next start'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
-      appSettings: [ 
-        { 
+      appSettings: [
+        {
           name: 'AZURE_KEY_VAULT_NAME'
           value: keyVaultName
         }
-        { 
+        {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'true'
         }
@@ -182,18 +185,18 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'AZURE_SEARCH_API_KEY'
           value: '@Microsoft.KeyVault(VaultName=${kv.name};SecretName=${kv::AZURE_SEARCH_API_KEY.name})'
         }
-        { 
+        {
           name: 'AZURE_SEARCH_NAME'
           value: search_name
         }
-        { 
+        {
           name: 'AZURE_SEARCH_INDEX_NAME'
           value: searchServiceIndexName
         }
-        { 
+        {
           name: 'AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT'
           value: 'https://${form_recognizer_name}.cognitiveservices.azure.com/'
-        }        
+        }
         {
           name: 'AZURE_DOCUMENT_INTELLIGENCE_KEY'
           value: '@Microsoft.KeyVault(VaultName=${kv.name};SecretName=${kv::AZURE_DOCUMENT_INTELLIGENCE_KEY.name})'
@@ -217,7 +220,7 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
       ]
     }
   }
-  identity: { type: 'SystemAssigned'}
+  identity: { type: 'SystemAssigned' }
 
   resource configLogs 'config' = {
     name: 'logs'
@@ -442,18 +445,21 @@ resource azureopenai 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
 }
 
 @batchSize(1)
-resource llmdeployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for deployment in llmDeployments: {
-  parent: azureopenai
-  name: deployment.name
-  properties: {
-    model: deployment.model
-    raiPolicyName: contains(deployment, 'raiPolicyName') ? deployment.raiPolicyName : null
+resource llmdeployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [
+  for deployment in llmDeployments: {
+    parent: azureopenai
+    name: deployment.name
+    properties: {
+      model: deployment.model
+    }
+    sku: contains(deployment, 'sku')
+      ? deployment.sku
+      : {
+          name: 'Standard'
+          capacity: deployment.capacity
+        }
   }
-  sku: contains(deployment, 'sku') ? deployment.sku : {
-    name: 'Standard'
-    capacity: deployment.capacity
-  }
-}]
+]
 
 resource azureopenaidalle 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   name: openai_dalle_name
@@ -482,8 +488,6 @@ resource azureopenaidalle 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
     }
   }
 }
-
-
 
 resource speechService 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   name: speech_service_name
