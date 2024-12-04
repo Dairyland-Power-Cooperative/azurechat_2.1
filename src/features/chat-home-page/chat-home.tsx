@@ -3,7 +3,7 @@ import { ExtensionCard } from "@/features/extensions-page/extension-card/extensi
 import { ExtensionModel } from "@/features/extensions-page/extension-services/models";
 import { PersonaCard } from "@/features/persona-page/persona-card/persona-card";
 import { PersonaModel } from "@/features/persona-page/persona-services/models";
-import { AI_DESCRIPTION, AI_NAME } from "@/features/theme/theme-config";
+import { AI_DESCRIPTION, AI_NAME, AI_ICON_URL } from "@/features/theme/theme-config";
 import { Hero } from "@/features/ui/hero";
 import { ScrollArea } from "@/features/ui/scroll-area";
 import Image from "next/image";
@@ -22,7 +22,7 @@ export const ChatHome: FC<ChatPersonaProps> = (props) => {
           title={
             <>
               <Image
-                src={"/ai-icon.png"}
+                src={AI_ICON_URL}
                 width={60}
                 height={60}
                 quality={100}

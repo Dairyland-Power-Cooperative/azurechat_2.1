@@ -1,5 +1,5 @@
 "use client";
-import { AI_NAME } from "@/features/theme/theme-config";
+import { AI_NAME, AI_ICON_URL } from "@/features/theme/theme-config";
 import { signIn } from "next-auth/react";
 import { FC } from "react";
 import { Avatar, AvatarImage } from "../ui/avatar";
@@ -24,7 +24,7 @@ export const LogIn: FC<LoginProps> = (props) => {
       <CardHeader className="gap-2">
         <CardTitle className="text-2xl flex gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={"ai-icon.png"} />
+            <AvatarImage src={AI_ICON_URL} />
           </Avatar>
           <span className="text-primary">{AI_NAME}</span>
         </CardTitle>

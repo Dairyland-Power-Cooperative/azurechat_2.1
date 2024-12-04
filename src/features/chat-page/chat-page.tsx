@@ -16,6 +16,7 @@ import {
   ChatThreadModel,
 } from "./chat-services/models";
 import MessageContent from "./message-content";
+import { AI_ICON_URL } from "@/features/theme/theme-config";
 
 interface ChatPageProps {
   messages: Array<ChatMessageModel>;
@@ -50,25 +51,21 @@ export const ChatPage: FC<ChatPageProps> = (props) => {
       />
       <ChatMessageContainer ref={current}>
         <ChatMessageContentArea>
-          {messages.map((message) => {
-            return (
-              <ChatMessageArea
-                key={message.id}
-                profileName={message.name}
-                role={message.role}
-                onCopy={() => {
-                  navigator.clipboard.writeText(message.content);
-                }}
-                profilePicture={
-                  message.role === "assistant"
-                    ? "/ai-icon.png"
-                    : session?.user?.image
-                }
-              >
-                <MessageContent message={message} />
-              </ChatMessageArea>
-            );
-          })}
+          {messages.map((message) => (
+            <ChatMessageArea
+              key={message.id}
+              profileName={message.name}
+              role={message.role}
+              onCopy={() => navigator.clipboard.writeText(message.content)}
+              profilePicture={
+                message.role === "assistant"
+                  ? AI_ICON_URL
+                  : session?.user?.image
+              }
+            >
+              <MessageContent message={message} />
+            </ChatMessageArea>
+          ))}
           {loading === "loading" && <ChatLoading />}
         </ChatMessageContentArea>
       </ChatMessageContainer>

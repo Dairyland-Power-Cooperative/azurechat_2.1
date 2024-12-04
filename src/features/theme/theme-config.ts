@@ -1,5 +1,6 @@
-export const AI_NAME = "Azure Chat";
-export const AI_DESCRIPTION = "Azure Chat is a friendly AI assistant.";
+export const AI_NAME = "VoltWrite Chat";
+export const AI_DESCRIPTION = "VoltWrite Chat is a friendly AI assistant.";
+export const AI_ICON_URL = "https://dpcmemberstoai.blob.core.windows.net/membersvoltwriteassets/VoltWrite%20Cow%20Circle.png";
 export const CHAT_DEFAULT_PERSONA = AI_NAME + " default";
 
 export const CHAT_DEFAULT_SYSTEM_PROMPT = `You are a friendly ${AI_NAME} AI assistant. You must always return in markdown format.
