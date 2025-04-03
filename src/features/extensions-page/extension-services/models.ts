@@ -80,7 +80,7 @@ export const ExtensionModelSchema = z.object({
   functions: z.array(ExtensionFunctionSchema), // validation is done in the function schema
   type: z.literal(EXTENSION_ATTRIBUTE),
   //Added support for limiting Extensions to specific users
-  isPrivate: z.boolean(),
-  editors: z.array(AccessControlEntrySchema).default([]),
-  viewers: z.array(AccessControlEntrySchema).default([]),
+  //isPrivate: z.boolean(),
+  //editors: z.array(AccessControlEntrySchema).default([]),
+  //viewers: z.array(AccessControlEntrySchema).default([]),
 });
