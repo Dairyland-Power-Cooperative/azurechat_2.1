@@ -136,7 +136,7 @@ export const fetchProfilePicture = async (profilePictureUrl: string, accessToken
   return image;
 };
 
-export const fetchUserGroups = async (accessToken: string): Promise<string[]> => {
+export const fetchUserGroups = async (accessToken: any): Promise<string[]> => {
   console.log("Fetching user groups...");
   var url = 'https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName,mail,mailEnabled,securityEnabled'
   try {
