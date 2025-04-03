@@ -1,4 +1,5 @@
 import { refineFromEmpty } from "@/features/common/schema-validation";
+import { AccessControlEntrySchema } from "@/features/common/services/access-control/models";
 import { z } from "zod";
 
 export const EXTENSION_ATTRIBUTE = "EXTENSION";
@@ -6,6 +7,7 @@ export const EXTENSION_ATTRIBUTE = "EXTENSION";
 export type ExtensionModel = z.infer<typeof ExtensionModelSchema>;
 export type ExtensionFunctionModel = z.infer<typeof ExtensionFunctionSchema>;
 export type HeaderModel = z.infer<typeof HeaderSchema>;
+
 
 export const HeaderSchema = z.object({
   id: z.string(),
@@ -77,4 +79,8 @@ export const ExtensionModelSchema = z.object({
   createdAt: z.date(),
   functions: z.array(ExtensionFunctionSchema), // validation is done in the function schema
   type: z.literal(EXTENSION_ATTRIBUTE),
+  //Added support for limiting Extensions to specific users
+  isPrivate: z.boolean(),
+  editors: z.array(AccessControlEntrySchema).default([]),
+  viewers: z.array(AccessControlEntrySchema).default([]),
 });

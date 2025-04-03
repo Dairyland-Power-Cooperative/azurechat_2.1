@@ -25,6 +25,7 @@ const configureIdentityProvider = () => {
             ...profile,
             isAdmin: adminEmails?.includes(profile.email.toLowerCase()),
             image: image,
+            accessGroups: [],
           };
           console.log("GitHub profile:", newProfile);
           return newProfile;
@@ -51,6 +52,10 @@ const configureIdentityProvider = () => {
         async profile(profile, tokens) {
           const email = profile.email || profile.preferred_username || "";
           const image = await fetchProfilePicture(`https://graph.microsoft.com/v1.0/me/photos/48x48/$value`, tokens.access_token);
+          const groups = await fetchUserGroups(tokens.access_token);
+          console.log("groups:", groups);
+          const accessGroups = groups.map((group) => group.toLowerCase().trim());
+          console.log("Access groups:", accessGroups);
           const newProfile = {
             ...profile,
             email,
@@ -59,6 +64,7 @@ const configureIdentityProvider = () => {
               adminEmails?.includes(profile.email?.toLowerCase()) ||
               adminEmails?.includes(profile.preferred_username?.toLowerCase()),
             image: image,
+            accessGroups: accessGroups,
           };
           console.log("Azure AD profile:", newProfile);
           return newProfile;
@@ -91,6 +97,7 @@ const configureIdentityProvider = () => {
             email: email,
             isAdmin: adminEmails?.includes(email),
             image: "",
+            accessGroups: [],
           };
           console.log(
             "=== DEV USER LOGGED IN:\n",
@@ -129,6 +136,35 @@ export const fetchProfilePicture = async (profilePictureUrl: string, accessToken
   return image;
 };
 
+export const fetchUserGroups = async (accessToken: string): Promise<string[]> => {
+  console.log("Fetching user groups...");
+  var url = 'https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName,mail,mailEnabled,securityEnabled'
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+       // Filter for mail-enabled groups and extract email addresses
+      const mailGroups = data.value
+        .filter((group: any) => group.mailEnabled && group.mail)
+        .map((group: any) => group.mail);
+      
+      return mailGroups;
+    } else {
+      console.error('Failed to fetch user groups:', response.statusText);
+      return [];
+    }
+
+  } catch (error) {
+    console.error('Failed to fetch user groups:', error);
+    return [];
+  }
+}
 
 export const options: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
