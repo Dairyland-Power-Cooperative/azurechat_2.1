@@ -46,7 +46,7 @@ const configureIdentityProvider = () => {
         tenantId: process.env.AZURE_AD_TENANT_ID!,
         authorization: {
           params: {
-            scope: "openid profile User.Read", 
+            scope: "openid profile User.Read GroupMember.Read.All", 
           },
         },
         async profile(profile, tokens) {
@@ -150,12 +150,11 @@ export const fetchUserGroups = async (accessToken: any): Promise<string[]> => {
     if (response.ok) {
       const data = await response.json();
       console.debug("User groups data:", data);
-      console.log("User groups fetched successfully.");
        // Filter for mail-enabled groups and extract email addresses
       const mailGroups = data.value
         .filter((group: any) => group.mailEnabled && group.mail)
         .map((group: any) => group.mail);
-        
+
       console.log("User groups fetched successfully.");
       return mailGroups;
     } else {
