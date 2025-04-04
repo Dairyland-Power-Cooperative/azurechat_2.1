@@ -54,7 +54,7 @@ const configureIdentityProvider = () => {
           const image = await fetchProfilePicture(`https://graph.microsoft.com/v1.0/me/photos/48x48/$value`, tokens.access_token);
           const groups = await fetchUserGroups(tokens.access_token);
           console.log("groups:", groups);
-          const accessGroups = groups.map((group) => group.toLowerCase().trim());
+          const accessGroups = groups.map((group) => group.toLowerCase().trim()) || [];
           console.log("Access groups:", accessGroups);
           const newProfile = {
             ...profile,
@@ -64,7 +64,7 @@ const configureIdentityProvider = () => {
               adminEmails?.includes(profile.email?.toLowerCase()) ||
               adminEmails?.includes(profile.preferred_username?.toLowerCase()),
             image: image,
-            accessGroups: accessGroups,
+            accessGroups: accessGroups || [],
           };
           console.log("Azure AD profile:", newProfile);
           return newProfile;
@@ -177,13 +177,13 @@ export const options: NextAuthOptions = {
         token.isAdmin = user.isAdmin;
       }
       if(user?.accessGroups) {
-        token.accessGroups = user.accessGroups;
+        token.accessGroups = (user.accessGroups as string[]) || [];
       }
       return token;
     },
     async session({ session, token, user }) {
       session.user.isAdmin = token.isAdmin as boolean;
-      session.user.accessGroups = token.accessGroups as string[];
+      session.user.accessGroups = (token.accessGroups as string[]) || [];
       return session;
     },
   },
