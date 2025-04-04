@@ -175,6 +175,8 @@ export const options: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user?.isAdmin) {
         token.isAdmin = user.isAdmin;
+      }
+      if(user?.accessGroups) {
         token.accessGroups = user.accessGroups;
       }
       return token;
