@@ -1,5 +1,4 @@
 import { refineFromEmpty } from "@/features/common/schema-validation";
-import { AccessControlEntrySchema } from "@/features/common/services/access-control/models";
 import { z } from "zod";
 
 export const EXTENSION_ATTRIBUTE = "EXTENSION";
