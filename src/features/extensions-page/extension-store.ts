@@ -137,9 +137,14 @@ class ExtensionState {
       f.isOpen = false;
     });
 
-    this.extension = {
+    // Create a copy of the model
+    const extensionForForm = {
       ...models,
+      // Convert arrays to strings for form display if they exist
+      editorsString: Array.isArray(models.editors) ? models.editors.join(", ") : "",
+      viewersString: Array.isArray(models.viewers) ? models.viewers.join(", ") : ""
     };
+    this.extension = extensionForForm;
     this.resetAndOpenSlider();
   }
 
@@ -217,6 +222,23 @@ export const FormToExtensionModel = (formData: FormData): ExtensionModel => {
     }
   );
 
+  // Get editors and viewers as strings
+  const editorsString = formData.get("editors") as string || "";
+  const viewersString = formData.get("viewers") as string || "";
+
+  // Convert to arrays, filtering out empty values
+  const editorsArray = editorsString
+    ? editorsString.split(",")
+        .map((item) => item.trim())
+        .filter(item => item.length > 0)
+    : [];
+  
+  const viewersArray = viewersString
+    ? viewersString.split(",")
+        .map((item) => item.trim())
+        .filter(item => item.length > 0)
+    : [];
+
   return {
     id: formData.get("id") as string,
     name: formData.get("name") as string,
@@ -228,6 +250,10 @@ export const FormToExtensionModel = (formData: FormData): ExtensionModel => {
     type: "EXTENSION",
     functions: functions,
     headers: headers,
+    // Access control fields
+    isPrivate: formData.get("isPrivate") === "on" ? true : false,
+    editors: editorsArray,
+    viewers: viewersArray,
   };
 };
 

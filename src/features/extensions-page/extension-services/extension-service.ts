@@ -5,6 +5,7 @@ import {
   getCurrentUser,
   userHashedId,
   userSession,
+  UserModel,
 } from "@/features/auth-page/helpers";
 import { UpsertChatThread } from "@/features/chat-page/chat-services/chat-thread-service";
 import {
@@ -25,8 +26,43 @@ import {
   ExtensionModel,
   ExtensionModelSchema,
 } from "./models";
+// Import the access control utilities
+import { 
+  userHasEditAccess,
+  userHasViewAccess 
+} from "@/features/common/services/access-control/utils";
 
 const KEY_VAULT_MASK = "**********";
+
+// Helper function to check if user can edit extension
+export const canUserEditExtension = (
+  extension: ExtensionModel,
+  currentUser: UserModel
+): boolean => {
+  if(!extension) return false;
+  if(!currentUser) return false;
+  return userHasEditAccess(
+    currentUser, 
+    extension.editors || [],
+    //extension.isPrivate || false, 
+    extension.userId || ""
+  );
+};
+
+// Helper function to check if user can view extension
+export const canUserViewExtension = (
+  extension: ExtensionModel,
+  currentUser: UserModel
+): boolean => {
+  if(!extension) return false;
+  if(!currentUser) return false;
+  return userHasViewAccess(
+    currentUser, 
+    extension.editors || [],
+    extension.isPrivate || false, 
+    extension.userId || ""
+  );
+};
 
 export const FindExtensionByID = async (
   id: string
@@ -103,6 +139,10 @@ export const CreateExtension = async (
       type: "EXTENSION",
       functions: inputModel.functions,
       headers: inputModel.headers,
+      // Custom attributes
+      isPrivate: inputModel.isPrivate,
+      editors: inputModel.editors,
+      viewers: inputModel.viewers,
     };
 
     const validatedFields = validateSchema(modelToSave);
@@ -277,6 +317,11 @@ export const UpdateExtension = async (
         ? inputModel.isPublished
         : extensionResponse.response.isPublished;
 
+      // Ensure we save access control settings
+      inputModel.isPrivate = inputModel.isPrivate ?? extensionResponse.response.isPrivate;
+      inputModel.editors = inputModel.editors || extensionResponse.response.editors || [];
+      inputModel.viewers = inputModel.viewers || extensionResponse.response.viewers || [];
+
       inputModel.userId = extensionResponse.response.userId;
       inputModel.createdAt = new Date();
       inputModel.type = "EXTENSION";
@@ -362,6 +407,14 @@ export const FindAllExtensionForCurrentUser = async (): Promise<
       .items.query<ExtensionModel>(querySpec)
       .fetchAll();
 
+    // Get current user info for access control
+    const currentUser = await getCurrentUser();
+    
+    // Filter extensions based on access control
+    const accessibleExtensions = resources.filter((extension: any) => 
+      canUserViewExtension(extension, currentUser)
+    );
+
     return {
       status: "OK",
       response: resources,
@@ -385,6 +438,20 @@ export const CreateChatWithExtension = async (
 
   if (extensionResponse.status === "OK") {
     const extension = extensionResponse.response;
+
+     // Check if user has access to this extension
+     const currentUser = await getCurrentUser();
+    
+     if (!canUserViewExtension(extension, currentUser)) {
+       return {
+         status: "UNAUTHORIZED",
+         errors: [
+           {
+             message: "You don't have permission to use this extension.",
+           },
+         ],
+       };
+     }
 
     const response = await UpsertChatThread({
       name: extension.name,

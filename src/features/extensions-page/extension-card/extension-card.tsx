@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/features/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, LockIcon, GlobeIcon, CheckCircleIcon } from "lucide-react";
 import { FC } from "react";
 import {
   Card,
@@ -26,6 +26,26 @@ export const ExtensionCard: FC<Props> = (props) => {
     <Card key={extension.id} className="flex flex-col">
       <CardHeader className="flex flex-row">
         <CardTitle className="flex-1">{extension.name}</CardTitle>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+          {extension.isPrivate ? (
+            <div className="flex items-center">
+              <LockIcon className="h-3 w-3 mr-1" />
+              <span>Private</span>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <GlobeIcon className="h-3 w-3 mr-1" />
+              <span>Public</span>
+            </div>
+          )}
+          
+          {extension.isPublished && (
+            <div className="flex items-center">
+              <CheckCircleIcon className="h-3 w-3 mr-1" />
+              <span>Published</span>
+            </div>
+          )}
+        </div>
         {props.showContextMenu && (
           <div>
             <ExtensionCardContextMenu extension={extension} />

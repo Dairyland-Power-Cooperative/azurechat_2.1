@@ -1,69 +1,63 @@
-import { AccessControlEntry } from "./models";
+import {
+  UserModel,
+} from "@/features/auth-page/helpers";
 
 /**
- * Checks if a user has access based on a list of access control entries
- * @param entries Access control entries to check against
- * @param userEmail User's email address
- * @param userGroups Array of group emails the user belongs to
+ * Checks if a user has access based on a list of access control group IDs
+ * @param userGroups Array of group IDs the user belongs to
+ * @param accessGroups Array of group IDs the with appropriate permissions
  * @returns boolean indicating whether user has access
  */
-export const hasAccess = (
-  entries: AccessControlEntry[],
-  userEmail: string,
-  userGroups: string[] = []
+export const userHasGroupAccess = (
+  userGroups: string[] = [],
+  accessGroups: string[] = [],
 ): boolean => {
-  if (!entries || entries.length === 0) return false;
+  if (!accessGroups || accessGroups.length === 0) return false;
   
-  return entries.some(entry => 
-    (entry.type === "INDIVIDUAL" && entry.value === userEmail) || 
-    (entry.type === "GROUP" && userGroups.includes(entry.value))
-  );
+  // Check if any of the user's groups are in the allowed groups
+  return accessGroups.some(groupId => userGroups.includes(groupId));
 };
 
-/**
- * Migrates older string-based access control data to the structured format
- * @param accessString Original string data (comma-separated or JSON string)
- * @returns Array of AccessControlEntry objects
- */
-export const migrateAccessControlData = (accessString: string | AccessControlEntry[]): AccessControlEntry[] => {
-  if (!accessString) return [];
+export const userHasEditAccess = (
+  currentUser : UserModel, 
+  editAccessGroups: string[] = [],
+  //isResourcePrivate: boolean = false,
+  resourceOwnerId: string = "",
+): boolean => {
+  if (!currentUser) return false;
   
-  // If it's already an array of AccessControlEntry objects
-  if (Array.isArray(accessString)) {
-    return accessString;
-  }
-  
-  // If it's a string, try to parse as JSON first
-  if (typeof accessString === "string") {
-    try {
-      const parsed = JSON.parse(accessString);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      } else if (typeof parsed === "string") {
-        return convertCommaSeparatedToEntries(parsed);
-      }
-    } catch {
-      // If JSON parsing fails, treat as comma-separated
-      return convertCommaSeparatedToEntries(accessString);
-    }
-  }
-  
-  return [];
-};
+  // Check if the user is an admin
+  if (currentUser.isAdmin) return true;
 
-/**
- * Converts a comma-separated string of emails to AccessControlEntry objects
- */
-const convertCommaSeparatedToEntries = (commaSeparated: string): AccessControlEntry[] => {
-  if (!commaSeparated.trim()) return [];
+  // Resource owner can always edit
+  if (resourceOwnerId === currentUser.email) return true;
   
-  return commaSeparated
-    .split(",")
-    .map(email => email.trim())
-    .filter(email => email)
-    .map(email => ({
-      id: crypto.randomUUID(),
-      value: email,
-      type: "INDIVIDUAL" as const
-    }));
-};
+  // Check if the user has access to edit the resource via group
+  const hasEditAccess = userHasGroupAccess(currentUser.accessGroups, editAccessGroups);
+
+  return hasEditAccess;
+}
+
+export const userHasViewAccess = (
+  currentUser : UserModel, 
+  viewAccessGroups: string[] = [],
+  isResourcePrivate: boolean = false,
+  resourceOwnerId: string = "",
+): boolean => {
+  if (!currentUser) return false;
+  
+  // If the resource is not private, anyone can view it
+  if(!isResourcePrivate) return true;
+
+  // Check if the user is an admin
+  if (currentUser.isAdmin) return true;
+
+  // Resource owner can always view
+  if (resourceOwnerId === currentUser.email) return true;
+  
+  // Check if the user has access to view the private resource by group
+  const hasViewAccess = userHasGroupAccess(currentUser.accessGroups, viewAccessGroups);
+
+  return hasViewAccess;
+}
+      

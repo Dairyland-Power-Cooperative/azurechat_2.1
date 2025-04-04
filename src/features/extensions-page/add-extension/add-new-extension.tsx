@@ -103,6 +103,40 @@ export const AddExtension: FC<Props> = (props) => {
               </div>
               <EndpointHeader />
               <AddFunction />
+              {/* Add these sections to your form */}
+              <div className="flex items-center space-x-2 pt-4 pb-2">
+                <Switch name="isPrivate" defaultChecked={extension.isPrivate} />
+                <Label>Private Extension</Label>
+                <span className="text-xs text-muted-foreground ml-2">
+                  (Only accessible to you and users with explicit access)
+                </span>
+              </div>
+
+              <div className="grid gap-2 mt-4">
+                <Label htmlFor="editors">Editor Groups</Label>
+                <Input
+                  type="text"
+                  name="editors"
+                  defaultValue={Array.isArray(extension.editors) ? extension.editors.join(", ") : ""}
+                  placeholder="Group IDs with edit access (comma separated)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter Group IDs that can edit this extension
+                </p>
+              </div>
+
+              <div className="grid gap-2 mt-4">
+                <Label htmlFor="viewers">Viewer Groups</Label>
+                <Input
+                  type="text"
+                  name="viewers"
+                  defaultValue={Array.isArray(extension.viewers) ? extension.viewers.join(", ") : ""}
+                  placeholder="Group IDs with view access (comma separated)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter Group IDs that can view but not edit this extension
+                </p>
+              </div>
             </div>
           </ScrollArea>
           <SheetFooter className="py-2 flex sm:justify-between flex-row">
