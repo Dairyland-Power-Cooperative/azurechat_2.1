@@ -175,11 +175,13 @@ export const options: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user?.isAdmin) {
         token.isAdmin = user.isAdmin;
+        token.accessGroups = user.accessGroups;
       }
       return token;
     },
     async session({ session, token, user }) {
       session.user.isAdmin = token.isAdmin as boolean;
+      session.user.accessGroups = token.accessGroups as string[];
       return session;
     },
   },
