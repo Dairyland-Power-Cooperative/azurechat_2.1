@@ -149,11 +149,11 @@ export const fetchUserGroups = async (accessToken: any): Promise<string[]> => {
 
     if (response.ok) {
       const data = await response.json();
-      console.debug("User groups data:", data);
+      //console.debug("User groups data:", data);
        // Filter for mail-enabled groups and extract email addresses
       const mailGroups = data.value
-        .filter((group: any) => group.mailEnabled && group.mail)
-        .map((group: any) => group.mail);
+        //.filter((group: any) => group.mailEnabled && group.mail)
+        .map((group: any) => group.id);
 
       console.log("User groups fetched successfully.");
       return mailGroups;
