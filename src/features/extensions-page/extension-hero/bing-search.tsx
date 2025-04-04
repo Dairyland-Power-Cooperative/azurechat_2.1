@@ -57,6 +57,9 @@ export const BingSearch = () => {
       isPublished: false,
       type: "EXTENSION",
       userId: "",
+      isPrivate: false,
+      viewers: [],
+      editors: [],
     };
 
     extensionStore.openAndUpdate(bingExample);

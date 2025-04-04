@@ -48,6 +48,9 @@ class ExtensionState {
         },
       ],
       userId: "",
+      isPrivate: false,
+      viewers: [],
+      editors: [],
     };
   }
 
