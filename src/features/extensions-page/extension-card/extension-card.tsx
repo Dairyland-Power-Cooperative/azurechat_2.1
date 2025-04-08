@@ -26,6 +26,14 @@ export const ExtensionCard: FC<Props> = (props) => {
     <Card key={extension.id} className="flex flex-col">
       <CardHeader className="flex flex-row">
         <CardTitle className="flex-1">{extension.name}</CardTitle>
+        
+        {props.showContextMenu && (
+          <div>
+            <ExtensionCardContextMenu extension={extension} />
+          </div>
+        )}
+      </CardHeader>
+      <CardContent className="text-muted-foreground flex-1">
         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
           {extension.isPrivate ? (
             <div className="flex items-center">
@@ -46,14 +54,9 @@ export const ExtensionCard: FC<Props> = (props) => {
             </div>
           )}
         </div>
-        {props.showContextMenu && (
-          <div>
-            <ExtensionCardContextMenu extension={extension} />
-          </div>
-        )}
-      </CardHeader>
-      <CardContent className="text-muted-foreground flex-1">
-        {extension.description}
+        <div className="h-1">
+          {extension.description}
+        </div>
       </CardContent>
       <CardFooter className="gap-1 content-stretch f">
         {props.showContextMenu && (

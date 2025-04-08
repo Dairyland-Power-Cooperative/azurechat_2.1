@@ -417,7 +417,7 @@ export const FindAllExtensionForCurrentUser = async (): Promise<
 
     return {
       status: "OK",
-      response: resources,
+      response: accessibleExtensions,
     };
   } catch (error) {
     return {
