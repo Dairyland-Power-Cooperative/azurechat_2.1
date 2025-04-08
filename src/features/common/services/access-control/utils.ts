@@ -1,5 +1,5 @@
 import {
-  UserModel,
+  UserModel, hashValue
 } from "@/features/auth-page/helpers";
 
 /**
@@ -29,8 +29,10 @@ export const userHasEditAccess = (
   // Check if the user is an admin
   if (currentUser.isAdmin) return true;
 
+  const userHashId = hashValue(currentUser.email);
+
   // Resource owner can always edit
-  if (resourceOwnerId === currentUser.email) return true;
+  if (resourceOwnerId === userHashId) return true;
   
   // Check if the user has access to edit the resource via group
   const hasEditAccess = userHasGroupAccess(currentUser.accessGroups, editAccessGroups);
@@ -52,8 +54,10 @@ export const userHasViewAccess = (
   // Check if the user is an admin
   if (currentUser.isAdmin) return true;
 
+  const userHashId = hashValue(currentUser.email);
+
   // Resource owner can always view
-  if (resourceOwnerId === currentUser.email) return true;
+  if (resourceOwnerId === userHashId) return true;
   
   // Check if the user has access to view the private resource by group
   const hasViewAccess = userHasGroupAccess(currentUser.accessGroups, viewAccessGroups);

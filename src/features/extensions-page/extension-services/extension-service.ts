@@ -384,9 +384,19 @@ export const FindAllExtensionForCurrentUser = async (): Promise<
   ServerActionResponse<Array<ExtensionModel>>
 > => {
   try {
+    // Get current user info for access control
+    const currentUser = await getCurrentUser();
+
+    var dbQuery = ""
+    if (currentUser.isAdmin) {
+      dbQuery = "SELECT * FROM root r WHERE r.type=@type ORDER BY r.createdAt DESC";
+    } else {
+      dbQuery =
+        "SELECT * FROM root r WHERE r.type=@type AND (r.isPublished=@isPublished OR r.userId=@userId) ORDER BY r.createdAt DESC";
+    }
+
     const querySpec: SqlQuerySpec = {
-      query:
-        "SELECT * FROM root r WHERE r.type=@type AND (r.isPublished=@isPublished OR r.userId=@userId) ORDER BY r.createdAt DESC",
+      query: dbQuery,
       parameters: [
         {
           name: "@type",
@@ -407,8 +417,7 @@ export const FindAllExtensionForCurrentUser = async (): Promise<
       .items.query<ExtensionModel>(querySpec)
       .fetchAll();
 
-    // Get current user info for access control
-    const currentUser = await getCurrentUser();
+    
     
     // Filter extensions based on access control
     const accessibleExtensions = resources.filter((extension: any) => 
