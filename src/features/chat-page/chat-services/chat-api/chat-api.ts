@@ -23,6 +23,8 @@ type ChatTypes = "extensions" | "chat-with-file" | "multimodal";
 export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
   const currentChatThreadResponse = await EnsureChatThreadOperation(props.id);
 
+  console.debug("ChatAPIEntry", currentChatThreadResponse);
+
   if (currentChatThreadResponse.status !== "OK") {
     return new Response("", { status: 401 });
   }

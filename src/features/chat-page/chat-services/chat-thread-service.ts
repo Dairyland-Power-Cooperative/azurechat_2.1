@@ -178,6 +178,8 @@ export const EnsureChatThreadOperation = async (
   const currentUser = await getCurrentUser();
   const hashedId = await userHashedId();
 
+  console.debug("Chat thread response", response);
+
   if (response.status === "OK") {
     if (currentUser.isAdmin || response.response.userId === hashedId) {
       return response;
