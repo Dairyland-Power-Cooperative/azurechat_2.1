@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const multimodalImage = formData.get("image-base64") as unknown as string;
 
   //log image
-  if (!multimodalImage) {
+  if (multimodalImage) {
     console.debug("Image size: ", multimodalImage.length);
     console.debug("Image: ", multimodalImage);
   }

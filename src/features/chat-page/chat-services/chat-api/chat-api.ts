@@ -31,6 +31,8 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
     return new Response("", { status: 401 });
   }
 
+  console.debug("currentChatThreadResponse ok")
+
   const currentChatThread = currentChatThreadResponse.response;
 
   // promise all to get user, history and docs
@@ -44,6 +46,9 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
       signal,
     }),
   ]);
+
+  console.debug("get user, history and docs")
+
   // Starting values for system and user prompt
   // Note that the system message will also get prepended with the extension execution steps. Please see ChatApiExtensions method.
   currentChatThread.personaMessage = `${CHAT_DEFAULT_SYSTEM_PROMPT} \n\n ${currentChatThread.personaMessage}`;
@@ -66,6 +71,8 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
     chatThreadId: currentChatThread.id,
     multiModalImage: props.multimodalImage,
   });
+
+  console.debug("CreateChatMessage ok")
 
   let runner: ChatCompletionStreamingRunner;
 
@@ -97,10 +104,14 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
       break;
   }
 
+  console.debug("starting readableStream")
+
   const readableStream = OpenAIStream({
     runner: runner,
     chatThread: currentChatThread,
   });
+
+  console.debug("readableStream ok")
 
   return new Response(readableStream, {
     headers: {
