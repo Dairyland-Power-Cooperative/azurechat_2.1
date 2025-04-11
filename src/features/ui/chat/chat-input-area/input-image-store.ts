@@ -37,10 +37,6 @@ class InputImageState {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await this.fileToBase64(file);
-      
-      console.debug("base64 Image size: ", base64.length);
-      console.debug("base64 Image: ", base64);
-
       const url = URL.createObjectURL(file);
       this.previewImage = url;
       this.base64Image = base64;

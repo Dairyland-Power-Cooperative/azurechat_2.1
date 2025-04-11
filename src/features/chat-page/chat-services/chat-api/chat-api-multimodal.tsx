@@ -13,8 +13,6 @@ export const ChatApiMultimodal = (props: {
   const { chatThread, userMessage, signal, file } = props;
 
   const openAI = OpenAIInstance();
-  
-  console.debug("file", file);
 
   return openAI.beta.chat.completions.stream(
     {

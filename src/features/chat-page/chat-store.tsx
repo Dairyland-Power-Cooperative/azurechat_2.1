@@ -133,14 +133,7 @@ class ChatState {
     this.updateAutoScroll(true);
     this.loading = "loading";
 
-    console.debug("Chat form data", formData);
-
     const multimodalImage = formData.get("image-base64") as unknown as string;
-
-    if (multimodalImage) {
-      console.debug("Image size: ", multimodalImage.length);
-      console.debug("Image: ", multimodalImage);
-    }
 
     const newUserMessage: ChatMessageModel = {
       id: uniqueId(),

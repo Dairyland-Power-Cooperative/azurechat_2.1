@@ -21,17 +21,11 @@ import { OpenAIStream } from "./open-ai-stream";
 type ChatTypes = "extensions" | "chat-with-file" | "multimodal";
 
 export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
-  console.debug("chatAPIEntryProps", props);
-
   const currentChatThreadResponse = await EnsureChatThreadOperation(props.id);
-
-  //console.debug("currentChatThreadResponse", currentChatThreadResponse);
 
   if (currentChatThreadResponse.status !== "OK") {
     return new Response("", { status: 401 });
   }
-
-  console.debug("currentChatThreadResponse ok")
 
   const currentChatThread = currentChatThreadResponse.response;
 
@@ -46,8 +40,6 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
       signal,
     }),
   ]);
-
-  console.debug("get user, history and docs")
 
   // Starting values for system and user prompt
   // Note that the system message will also get prepended with the extension execution steps. Please see ChatApiExtensions method.
@@ -71,8 +63,6 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
     chatThreadId: currentChatThread.id,
     multiModalImage: props.multimodalImage,
   });
-
-  console.debug("CreateChatMessage ok")
 
   let runner: ChatCompletionStreamingRunner;
 
@@ -104,14 +94,10 @@ export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
       break;
   }
 
-  console.debug("starting readableStream")
-
   const readableStream = OpenAIStream({
     runner: runner,
     chatThread: currentChatThread,
   });
-
-  console.debug("readableStream ok")
 
   return new Response(readableStream, {
     headers: {
