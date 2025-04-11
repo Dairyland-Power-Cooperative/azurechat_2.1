@@ -32,7 +32,7 @@ export const ImageInput: FC = () => {
     const originalEvent = { ...e }; // Clone the event
     
     // Process the file as usual to get immediate preview
-    InputImageStore.handleFileChange?.(originalEvent);
+    InputImageStore.OnFileChange?.(originalEvent);
     
     try {
       // Read the file as base64 for normalization
