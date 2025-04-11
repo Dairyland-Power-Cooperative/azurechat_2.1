@@ -21,9 +21,11 @@ import { OpenAIStream } from "./open-ai-stream";
 type ChatTypes = "extensions" | "chat-with-file" | "multimodal";
 
 export const ChatAPIEntry = async (props: UserPrompt, signal: AbortSignal) => {
+  console.debug("chatAPIEntryProps", props);
+
   const currentChatThreadResponse = await EnsureChatThreadOperation(props.id);
 
-  console.debug("ChatAPIEntry", currentChatThreadResponse);
+  //console.debug("currentChatThreadResponse", currentChatThreadResponse);
 
   if (currentChatThreadResponse.status !== "OK") {
     return new Response("", { status: 401 });
