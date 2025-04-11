@@ -167,6 +167,7 @@ export const UpsertChatMessage = async (
       ],
     };
   } catch (e) {
+    console.error("Error upserting chat message", e);
     return {
       status: "ERROR",
       errors: [

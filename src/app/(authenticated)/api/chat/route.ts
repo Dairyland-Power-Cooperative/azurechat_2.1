@@ -5,10 +5,13 @@ export async function POST(req: Request) {
   const formData = await req.formData();
   const content = formData.get("content") as unknown as string;
   const multimodalImage = formData.get("image-base64") as unknown as string;
-  
-  //log image
-  console.debug("Image: ", multimodalImage);
 
+  //log image
+  if (!multimodalImage) {
+    console.debug("Image size: ", multimodalImage.length);
+    console.debug("Image: ", multimodalImage);
+  }
+  
   const userPrompt: UserPrompt = {
     ...JSON.parse(content),
     multimodalImage,
